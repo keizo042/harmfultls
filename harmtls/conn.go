@@ -1,5 +1,9 @@
 package harmtls
 
+import (
+	"io"
+)
+
 // Conn is a TLS connection.
 type Conn struct {
 	remote *net.TCPAddr
@@ -8,7 +12,17 @@ type Conn struct {
 	PSK    []byte
 }
 
+func (conn *Conn) send(b []byte) error {
+	_, err := conn.conn.Write(b)
+	return err
+}
+
+func (conn *Conn) sendRecord(r *record) error {
+	return nil
+}
+
 func (conn *Conn) sendAppdata(r io.Reader, buflen int) error {
+	p
 	var (
 		buf   = make([]byte, buflen)
 		total uint16
@@ -31,11 +45,6 @@ func (conn *Conn) sendAppdata(r io.Reader, buflen int) error {
 			return nil
 		}
 	}
-}
-
-func (conn *Conn) send(b []byte) error {
-	_, err := conn.conn.Write(b)
-	return err
 }
 
 func (conn *Conn) recv(buflen int) (io.Reader, error) {
@@ -72,8 +81,11 @@ func (conn *Conn) recv(buflen int) (io.Reader, error) {
 	return r, nil
 
 }
-func (conn *Conn) sendRecord(r *record) error {
-	return nil
+
+func (conn *Conn) recvRecord() (*record, error) {
+}
+
+func (conn *Conn) recvAppData() (io.Reader, error) {
 }
 
 func (conn *Conn) marshal(ctext *chipertext) ([]byte, error) {

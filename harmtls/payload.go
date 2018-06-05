@@ -1,5 +1,15 @@
 package harmtls
 
+type contentType int8
+
+const (
+	contentTypeInvaild         contentType = 0
+	contentTypeChangeChperSpec             = 20
+	contentTypeAlert                       = 21
+	contentTypeHandshake                   = 22
+	contentTypeApplicationData             = 23
+)
+
 type plaintext struct {
 	typ                 contentType
 	legacyRecordVersion protocolVersion

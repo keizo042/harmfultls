@@ -29,16 +29,6 @@ type Client struct {
 	hasSessionKey bool
 }
 
-type contentType int8
-
-const (
-	contentTypeInvaild         contentType = 0
-	contentTypeChangeChperSpec             = 20
-	contentTypeAlert                       = 21
-	contentTypeHandshake                   = 22
-	contentTypeApplicationData             = 23
-)
-
 // Send sends bytes to peer.
 func Send(addr *net.TCPAddr, cert Certificate, key PublicKey, r io.Reader) (io.Reader, error) {
 	var (
@@ -56,10 +46,10 @@ func Send(addr *net.TCPAddr, cert Certificate, key PublicKey, r io.Reader) (io.R
 	if err != nil {
 		return nil, err
 	}
-	if err := connTLS.send(r, cli.BufLen); err != nil {
+	if err := connTLS.sendAppData(r, cli.BufLen); err != nil {
 		return nil, err
 	}
-	return connTLS.recv(cli.BufLen)
+	return connTLS.recvAppData(cli.BufLen)
 
 }
 
