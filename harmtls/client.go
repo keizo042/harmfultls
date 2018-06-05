@@ -1,7 +1,6 @@
 package harmtls
 
 import (
-	"bytes"
 	"errors"
 	"io"
 	"net"
@@ -16,10 +15,10 @@ var (
 )
 
 // Certificate is a certificate
-type Certificate = []byte
+type Certificate []byte
 
 // PublicKey is a public key.
-type PublicKey = []byte
+type PublicKey []byte
 
 // Client is a
 type Client struct {
@@ -53,11 +52,16 @@ func Send(addr *net.TCPAddr, cert Certificate, key PublicKey, r io.Reader) (io.R
 
 }
 
-func (c *Client) fullHandshake(conn *net.TCPConn) (*Conn, error) {
-	if err := c.sendClientHello(); err != nil {
+func (c *Client) fullHandshake(connTCP *net.TCPConn) (*Conn, error) {
+	var (
+		conn = &Conn{
+			conn: connTCP,
+		}
+	)
+	if err := c.sendClientHello(conn); err != nil {
 		return nil, err
 	}
-	if err := c.recvServerHello(); err != nil {
+	if err := c.recvServerHello(conn); err != nil {
 		return nil, err
 	}
 	if err := c.sendFinished(); err != nil {
@@ -66,26 +70,21 @@ func (c *Client) fullHandshake(conn *net.TCPConn) (*Conn, error) {
 	if err := c.recvFinished(); err != nil {
 		return nil, err
 	}
-	return &Conn{
-		conn: conn,
-	}, nil
+	return conn, nil
 }
 
-func (c *Client) sendClientHello() error {
-	w := &buffer{
-		Buffer: new(bytes.Buffer),
-	}
+func (c *Client) sendClientHello(conn *Conn) error {
 	return nil
 }
 
 func (c *Client) sendFinished() error {
-	return nil
+	return errors.New("ERROR")
 }
 
 func (c *Client) recvServerHello(conn *Conn) error {
-	return nil
+	return errors.New("ERROR")
 }
 
 func (c *Client) recvFinished() error {
-	return nil
+	return errors.New("ERROR")
 }

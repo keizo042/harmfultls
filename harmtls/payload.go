@@ -25,4 +25,9 @@ type chipertext struct {
 }
 
 func (p *plaintext) appData() []byte {
+	return nil
+}
+
+func (c *chipertext) bytes() []byte {
+	return nil
 }

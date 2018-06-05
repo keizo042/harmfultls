@@ -1,7 +1,10 @@
 package harmtls
 
 import (
+	"bytes"
+	"errors"
 	"io"
+	"net"
 )
 
 // Conn is a TLS connection.
@@ -18,14 +21,13 @@ func (conn *Conn) send(b []byte) error {
 }
 
 func (conn *Conn) sendRecord(r *record) error {
-	return nil
+	return errors.New("ERROR")
 }
 
-func (conn *Conn) sendAppdata(r io.Reader, buflen int) error {
-	p
+func (conn *Conn) sendAppData(r io.Reader, buflen int) error {
 	var (
 		buf   = make([]byte, buflen)
-		total uint16
+		total int
 	)
 	for {
 		n, err := r.Read(buf)
@@ -35,12 +37,13 @@ func (conn *Conn) sendAppdata(r io.Reader, buflen int) error {
 		ctext := chipertext{
 			typ:                  contentTypeApplicationData,
 			leegacyRecordVersion: legacyVersion,
-			length:               n,
+			length:               uint16(n),
 			encryptedRecord:      buf,
 		}
 		if err := conn.send(ctext.bytes()); err != nil {
 			return err
 		}
+		total += n
 		if n < buflen {
 			return nil
 		}
@@ -54,9 +57,8 @@ func (conn *Conn) recv(buflen int) (io.Reader, error) {
 	)
 	for {
 		var (
-			n       int
-			err     error
-			appData []byte
+			n   int
+			err error
 		)
 
 		n, err = conn.conn.Read(buff)
@@ -74,7 +76,7 @@ func (conn *Conn) recv(buflen int) (io.Reader, error) {
 		if _, err := r.Write(ptext.appData()); err != nil {
 			return nil, err
 		}
-		if n < bulen {
+		if n < buflen {
 			break
 		}
 	}
@@ -83,9 +85,11 @@ func (conn *Conn) recv(buflen int) (io.Reader, error) {
 }
 
 func (conn *Conn) recvRecord() (*record, error) {
+	return nil, errors.New("ERROR")
 }
 
-func (conn *Conn) recvAppData() (io.Reader, error) {
+func (conn *Conn) recvAppData(buflen int) (io.Reader, error) {
+	return nil, errors.New("ERROR")
 }
 
 func (conn *Conn) marshal(ctext *chipertext) ([]byte, error) {

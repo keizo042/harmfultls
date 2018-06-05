@@ -9,3 +9,6 @@ type clientHello struct {
 	legacyCompressionMethod uint8
 	extension               uint16
 }
+
+type record struct {
+}
