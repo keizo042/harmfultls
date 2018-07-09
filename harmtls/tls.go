@@ -14,17 +14,17 @@ type ExtensionType int
 
 const (
 	ServerName                          ExtensionType = 0
-	MaxFragmentLength                   ExtensionType = 1
-	StatusRequest                       ExtensionType = 5
-	SupportedGroups                     ExtensionType = 10
-	SignatureAlgorithms                 ExtensionType = 13
-	UseSrtp                             ExtensionType = 14
-	Heartbeat                           ExtensionType = 15
-	ApplicationLayerProtocolNegotiation ExtensionType = 16
-	SignedCertificateTimestamp          ExtensionType = 18
-	ClientCertificateType               ExtensionType = 19
-	ServerCertificateType               ExtensionType = 20
-	Padding                             ExtensionType = 21
+	MaxFragmentLength                                 = 1
+	StatusRequest                                     = 5
+	SupportedGroups                                   = 10
+	SignatureAlgorithms                               = 13
+	UseSrtp                                           = 14
+	Heartbeat                                         = 15
+	ApplicationLayerProtocolNegotiation               = 16
+	SignedCertificateTimestamp                        = 18
+	ClientCertificateType                             = 19
+	ServerCertificateType                             = 20
+	Padding                                           = 21
 	// TODO(upamune)
 	// pre_shared_key(41)
 	// early_data(42)
