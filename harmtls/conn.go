@@ -6,6 +6,9 @@ type ContentType int8
 const (
 	// LegacyRecordVersion is a const value for backward compability
 	LegacyRecordVersion uint16 = 0x0303
+
+	// LegacyContentType is a const value for backward compability.
+	LegacyContentType = 23 // application_data
 )
 
 // ContentTypes are defined at Section 5.1 of draft-ietf-tls-tls13-28.
@@ -19,7 +22,8 @@ const (
 
 // TLSPlaintext is a unencrypted payload.
 type TLSPlaintext struct {
-	LegacyRecordVersion uint16 // hard code value
+	ContentType         ContentType
+	LegacyRecordVersion uint16 // always 23
 	Length              uint16
 	Fragment            []byte
 }
