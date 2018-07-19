@@ -1,5 +1,10 @@
 package harmtls
 
+import (
+	"bytes"
+	"encoding/binary"
+)
+
 // ContentType is TLS Record ContentType
 type ContentType int8
 
@@ -32,12 +37,60 @@ type TLSPlaintext struct {
 type TLSInnerPlaintext struct {
 	Content     []byte
 	ContentType ContentType
-	Zeros       uint8
+	Zeros       uint64 // length of padding
 }
 
 // TLSCiphertext is a encyrypted payload.
 type TLSCiphertext struct {
 	OpaqueType          ContentType
 	LegacyRecordVersion ProtocolVersion
+	Length              uint16
 	EncryptedRecrod     []byte
+}
+
+// Bytes encode to network payload.
+func (ptext TLSPlaintext) writeBuffer(b *bytes.Buffer) error {
+	if err := binary.Write(b, binary.BigEndian, ptext.ContentType); err != nil {
+		return err
+	}
+	if err := binary.Write(b, binary.BigEndian, ptext.LegacyRecordVersion); err != nil {
+		return err
+	}
+	if err := binary.Write(b, binary.BigEndian, ptext.Length); err != nil {
+		return err
+	}
+	if err := binary.Write(b, binary.BigEndian, ptext.Fragment); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (inptext TLSInnerPlaintext) writeBuffer(b *bytes.Buffer) error {
+	if err := binary.Write(b, binary.BigEndian, inptext.ContentType); err != nil {
+		return err
+	}
+	if err := binary.Write(b, binary.BigEndian, inptext.Content); err != nil {
+		return err
+	}
+	zeros := make([]byte, inptext.Zeros)
+	if err := binary.Write(b, binary.BigEndian, zeros); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ctext TLSCiphertext) writeBuffer(b *bytes.Buffer) error {
+	if err := binary.Write(b, binary.BigEndian, ctext.OpaqueType); err != nil {
+		return err
+	}
+	if err := binary.Write(b, binary.BigEndian, ctext.LegacyRecordVersion); err != nil {
+		return err
+	}
+	if err := binary.Write(b, binary.BigEndian, ctext.LegacyRecordVersion); err != nil {
+		return err
+	}
+	if err := binary.Write(b, binary.BigEndian, ctext.EncryptedRecrod); err != nil {
+		return err
+	}
+	return nil
 }
