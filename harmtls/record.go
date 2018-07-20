@@ -48,7 +48,6 @@ type TLSCiphertext struct {
 	EncryptedRecrod     []byte
 }
 
-// Bytes encode to network payload.
 func (ptext TLSPlaintext) writeBuffer(b *bytes.Buffer) error {
 	if err := binary.Write(b, binary.BigEndian, ptext.ContentType); err != nil {
 		return err
