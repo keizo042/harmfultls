@@ -48,19 +48,50 @@ type TLSCiphertext struct {
 	EncryptedRecrod     []byte
 }
 
+func (ptext *TLSPlaintext) readBuffer(b *bytes.Buffer) error {
+	if err := binary.Read(b, binary.BigEndian, &ptext.ContentType); err != nil {
+		return err
+	}
+	if err := binary.Read(b, binary.BigEndian, &ptext.LegacyRecordVersion); err != nil {
+		return err
+	}
+	if err := binary.Read(b, binary.BigEndian, &ptext.Length); err != nil {
+		return err
+	}
+	fragment := make([]byte, ptext.Length)
+	if err := binary.Read(b, binary.BigEndian, fragment); err != nil {
+		return err
+	}
+	ptext.Fragment = fragment
+	return nil
+}
+
 func (ptext TLSPlaintext) writeBuffer(b *bytes.Buffer) error {
-	if err := binary.Write(b, binary.BigEndian, ptext.ContentType); err != nil {
+	if err := binary.Write(b, binary.BigEndian, &ptext.ContentType); err != nil {
 		return err
 	}
-	if err := binary.Write(b, binary.BigEndian, ptext.LegacyRecordVersion); err != nil {
+	if err := binary.Write(b, binary.BigEndian, &ptext.LegacyRecordVersion); err != nil {
 		return err
 	}
-	if err := binary.Write(b, binary.BigEndian, ptext.Length); err != nil {
+	if err := binary.Write(b, binary.BigEndian, &ptext.Length); err != nil {
 		return err
 	}
 	if err := binary.Write(b, binary.BigEndian, ptext.Fragment); err != nil {
 		return err
 	}
+	return nil
+}
+
+func (inptext *TLSInnerPlaintext) readBuffer(b *bytes.Buffer, length uint16) error {
+	if err := binary.Read(b, binary.BigEndian, &inptext.ContentType); err != nil {
+		return err
+	}
+	content := make([]byte, length)
+	if err := binary.Read(b, binary.BigEndian, content); err != nil {
+		return err
+	}
+	inptext.Content = content
+
 	return nil
 }
 
@@ -75,6 +106,24 @@ func (inptext TLSInnerPlaintext) writeBuffer(b *bytes.Buffer) error {
 	if err := binary.Write(b, binary.BigEndian, zeros); err != nil {
 		return err
 	}
+	return nil
+}
+
+func (ctext *TLSCiphertext) readBuffer(b *bytes.Buffer) error {
+	if err := binary.Read(b, binary.BigEndian, &ctext.OpaqueType); err != nil {
+		return err
+	}
+	if err := binary.Read(b, binary.BigEndian, &ctext.LegacyRecordVersion); err != nil {
+		return err
+	}
+	if err := binary.Read(b, binary.BigEndian, &ctext.Length); err != nil {
+		return err
+	}
+	encryptedRecord := make([]byte, ctext.Length)
+	if err := binary.Read(b, binary.BigEndian, encryptedRecord); err != nil {
+		return err
+	}
+	ctext.EncryptedRecrod = encryptedRecord
 	return nil
 }
 
