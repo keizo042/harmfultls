@@ -13,6 +13,8 @@ import (
 // - iv
 // - tokens
 type Conn interface {
+	Read([]byte) (int, error)
+	Write([]byte) (int, error)
 }
 
 // conn is a entity of TLS connection.
@@ -25,6 +27,7 @@ type conn struct {
 
 	// concecused paramters
 	chiperSuite [2]byte
+	psk         atomic.Value
 	clientIV    []byte
 	serverIV    []byte
 
@@ -34,7 +37,7 @@ type conn struct {
 // DialTLS connects TLS server
 // DialTLS connect tcp and handshake.
 // iv, token  are selected as internally.
-func DialTLS(network string, ip net.IP, port int, secret []byte, cert []byte) (*Conn, error) {
+func DialTLS(network string, ip net.IP, port int, secret []byte, cert []byte) (Conn, error) {
 	raddr := &net.TCPAddr{
 		IP:   ip,
 		Port: port,
@@ -43,12 +46,12 @@ func DialTLS(network string, ip net.IP, port int, secret []byte, cert []byte) (*
 	if err != nil {
 		return nil, err
 	}
-	c := &conn{
+	c := conn{
 		sock:   tcp,
 		secret: secret,
 		cert:   cert,
 	}
-	return c, nil
+	return Conn(c), nil
 }
 
 func (c *conn) Write(payload []byte) (int, error) {
@@ -57,6 +60,14 @@ func (c *conn) Write(payload []byte) (int, error) {
 
 func (c *conn) Read(buf []byte) (int, error) {
 	return c.sock.Read(buf)
+}
+
+func (c *conn) setPSK(psk []byte) {
+	c.psk.Store(psk)
+}
+
+func (c *conn) getPSK() []byte {
+	return c.psk.Load().([]byte)
 }
 
 func (c *conn) enableEncryption() {
