@@ -22,8 +22,10 @@ type conn struct {
 	sock *net.TCPConn
 
 	// prepared parameters
-	secret []byte
-	cert   []byte
+	clientSecret []byte
+	clientCert   []byte
+	serverSecret []byte
+	serverCert   []byte
 
 	// concecused paramters
 	chiperSuite [2]byte
@@ -47,18 +49,18 @@ func DialTLS(network string, ip net.IP, port int, secret []byte, cert []byte) (C
 		return nil, err
 	}
 	c := conn{
-		sock:   tcp,
-		secret: secret,
-		cert:   cert,
+		sock:         tcp,
+		clientSecret: secret,
+		clientCert:   cert,
 	}
 	return Conn(c), nil
 }
 
-func (c *conn) Write(payload []byte) (int, error) {
+func (c conn) Write(payload []byte) (int, error) {
 	return c.sock.Write(payload)
 }
 
-func (c *conn) Read(buf []byte) (int, error) {
+func (c conn) Read(buf []byte) (int, error) {
 	return c.sock.Read(buf)
 }
 
