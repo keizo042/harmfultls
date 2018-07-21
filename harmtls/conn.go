@@ -13,18 +13,22 @@ import (
 // - iv
 // - tokens
 type Conn interface {
-	net.Conn
 }
 
 // conn is a entity of TLS connection.
 type conn struct {
-	sock        *net.TCPConn
-	secret      []byte
-	cert        []byte
-	isEncrypted uint32
+	sock *net.TCPConn
+
+	// prepared parameters
+	secret []byte
+	cert   []byte
+
+	// concecused paramters
 	chiperSuite [2]byte
 	clientIV    []byte
 	serverIV    []byte
+
+	isEncrypted uint32
 }
 
 // DialTLS connects TLS server
@@ -45,6 +49,14 @@ func DialTLS(network string, ip net.IP, port int, secret []byte, cert []byte) (*
 		cert:   cert,
 	}
 	return c, nil
+}
+
+func (c *conn) Write(payload []byte) (int, error) {
+	return c.sock.Write(payload)
+}
+
+func (c *conn) Read(buf []byte) (int, error) {
+	return c.sock.Read(buf)
 }
 
 func (c *conn) enableEncryption() {
