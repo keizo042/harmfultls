@@ -1,6 +1,7 @@
 package harmtls
 
 import (
+	"io"
 	"net"
 	"sync/atomic"
 )
@@ -13,8 +14,7 @@ import (
 // - iv
 // - tokens
 type Conn interface {
-	Read([]byte) (int, error)
-	Write([]byte) (int, error)
+	io.ReadWriteCloser
 }
 
 // conn is a entity of TLS connection.
@@ -62,6 +62,10 @@ func (c conn) Write(payload []byte) (int, error) {
 
 func (c conn) Read(buf []byte) (int, error) {
 	return c.sock.Read(buf)
+}
+
+func (c conn) Close() error {
+	return c.sock.Close()
 }
 
 func (c *conn) setPSK(psk []byte) {
