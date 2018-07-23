@@ -54,7 +54,7 @@ func DialTLS(network string, ip net.IP, port int, secret []byte, cert []byte) (C
 		clientSecret: secret,
 		clientCert:   cert,
 	}
-	return Conn(c), nil
+	return &c, nil
 }
 
 func (c conn) Write(payload []byte) (int, error) {
