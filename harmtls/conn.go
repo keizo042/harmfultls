@@ -33,6 +33,7 @@ type conn struct {
 	clientIV    []byte
 	serverIV    []byte
 
+	// should be after Client Hello
 	isEncrypted uint32
 	// for Hello Retry Request
 	chelloHash []byte
@@ -74,6 +75,7 @@ func (c conn) Read(buf []byte) (int, error) {
 }
 
 func (c conn) Close() error {
+	// TODO(keizo042): Sending close_notify Alert.
 	return c.sock.Close()
 }
 
