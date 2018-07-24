@@ -22,10 +22,10 @@ type conn struct {
 	sock *net.TCPConn
 
 	// prepared parameters
-	clientSecret []byte
-	clientCert   []byte
-	serverSecret []byte
-	serverCert   []byte
+	clientKey  []byte
+	clientCert []byte
+	serverKey  []byte
+	serverCert []byte
 
 	// concecused paramters
 	chiperSuite [2]byte
@@ -40,7 +40,7 @@ type conn struct {
 // DialTLS connects TLS server
 // DialTLS connect tcp and handshake.
 // iv, token  are selected as internally.
-func DialTLS(network string, ip net.IP, port int, secret []byte, cert []byte) (Conn, error) {
+func DialTLS(network string, ip net.IP, port int, key []byte, cert []byte) (Conn, error) {
 	raddr := &net.TCPAddr{
 		IP:   ip,
 		Port: port,
@@ -50,9 +50,9 @@ func DialTLS(network string, ip net.IP, port int, secret []byte, cert []byte) (C
 		return nil, err
 	}
 	c := conn{
-		sock:         tcp,
-		clientSecret: secret,
-		clientCert:   cert,
+		sock:       tcp,
+		clientKey:  key,
+		clientCert: cert,
 	}
 	return &c, nil
 }
