@@ -34,7 +34,15 @@ type conn struct {
 	serverIV    []byte
 
 	isEncrypted uint32
-	chelloHash  []byte
+	// for Hello Retry Request
+	chelloHash []byte
+
+	signatureAlgolithms [2]byte
+
+	// computed secrets
+	senderClientEaryTrafficSecret []byte
+	senderHandshakeTrafficSecret  []byte
+	senderApplicationDataSecret   []byte
 }
 
 // DialTLS connects TLS server
