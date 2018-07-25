@@ -17,13 +17,19 @@ type Conn interface {
 	io.ReadWriteCloser
 }
 
+// Key is representation of Public Key.
+type Key = []byte
+
+// Secret is secret representation.
+type Secret []byte
+
 // conn is a entity of TLS connection.
 type conn struct {
 	sock *net.TCPConn
 
 	// prepared parameters
-	clientKey  []byte
-	clientCert []byte
+	clientKey  Key
+	clientCert Key
 	serverKey  []byte
 	serverCert []byte
 
@@ -41,9 +47,16 @@ type conn struct {
 	signatureAlgolithms [2]byte
 
 	// computed secrets
-	senderClientEaryTrafficSecret []byte
-	senderHandshakeTrafficSecret  []byte
-	senderApplicationDataSecret   []byte
+	earlySecret                    Secret
+	binderKey                      Secret
+	earlyExporterMasterSecret      Secret
+	handshakeSecret                Secret
+	clientHandshakeTrafficSecret   Secret
+	serverHandshakeTrafficSecret   Secret
+	clientApplicationTrafficSecret Secret
+	serverApplicationTrafficSecret Secret
+	exporterMasterSecret           Secret
+	resumptionMasterSecret         Secret
 }
 
 // DialTLS connects TLS server
