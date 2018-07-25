@@ -62,6 +62,12 @@ type conn struct {
 // DialTLS connects TLS server
 // DialTLS connect tcp and handshake.
 // iv, token  are selected as internally.
+// network is only accept "tls".
+// ip and port indicate peer.
+// key is Public key
+// cert is X509 certificate.
+//
+// TODO(keizo042): Add DTLS network
 func DialTLS(network string, ip net.IP, port int, key []byte, cert []byte) (Conn, error) {
 	raddr := &net.TCPAddr{
 		IP:   ip,
